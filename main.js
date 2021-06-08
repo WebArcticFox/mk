@@ -1,46 +1,76 @@
-// Initialize players
-const player1 = {
-    player: 1,
-    name: 'Sonya',
-    hp: 100,
-    img: 'http://reactmarathon-api.herokuapp.com/assets/sonya.gif',
-    weapon: ['Gun','Legs','Arms'],
-    attack() {
-        console.log(`${this.name} Fight...`)
-    }
-}
-
-const player2 = {
-    player: 2,
-    name: 'Scorpio',
-    hp: 100,
-    img: 'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif',
-    weapon: ['Blade','Legs','Scorpion'],
-    attack() {
-        console.log(`${this.name} Fight...`)
-    }
-}
-
+// Initialize base elements
 const button = document.querySelector('.button')
-const chat = document.querySelector('.chat')
 const arenas = document.querySelector('.arenas')
 
+// Initialize function
+// Random
+const getRandom = (maxValue) => {
+    return Math.ceil(Math.random()*maxValue)
+}
 
-const createPlayer = (classUser,player) => {
+// Select player life
+function elHP () {
+    return document.querySelector(`.player${this.player} .life`)
+}
+
+// Rerender player HP
+function renderHP () {
+    let lifeDiv = this.elHP()
+    lifeDiv.style.width = this.hp+'%'
+}
+
+// Change players HP
+function changeHP (countHPRemove) {
+    this.hp -= countHPRemove
+    if(this.hp<0){
+        this.hp = 0
+    }
+    this.renderHP()
+}
+
+// Create element (div/img)
+function createElement (tag, classes) {
+    let element = document.createElement(tag)
+    if(classes){
+        element.classList.add(classes)
+    }
+    return element
+}
+
+// Show result
+const showResult = (name) => {
+    // Show player win
+    let loseTitle = createElement('div', 'loseTitle')
+    if(name){
+        loseTitle.innerHTML = `${name} WIN!`
+    }else{
+        loseTitle.innerHTML = `DRAW!`
+    }
+    arenas.append(loseTitle)
+    arenas.append(createReloadButton())
+}
+
+// Create Reload Button
+const createReloadButton = () => {
+    let reloadWrap = createElement('div','reloadWrap')
+    let reloadButton = createElement('button', 'button')
+    reloadButton.innerHTML = 'Restart'
+    reloadButton.addEventListener('click',() => {
+        window.location.reload()
+    })
+    reloadWrap.appendChild(reloadButton)
+    return reloadWrap
+}
+
+// Create Players
+const createPlayer = (player) => {
     // Create elements
-    let playerDiv = document.createElement("div")
-    let progressbarDiv = document.createElement("div")
-    let characterDiv = document.createElement("div")
-    let lifeDiv = document.createElement("div")
-    let nameDiv = document.createElement("div")
-    let playerImg = document.createElement("img")
-
-    // Add classes
-    playerDiv.classList.add(classUser)
-    progressbarDiv.classList.add('progressbar')
-    characterDiv.classList.add('character')
-    lifeDiv.classList.add('life')
-    nameDiv.classList.add('name')
+    let playerDiv = createElement('div', `player${player.player}`)
+    let progressbarDiv = createElement('div', 'progressbar')
+    let characterDiv = createElement('div', 'character')
+    let lifeDiv = createElement('div', 'life')
+    let nameDiv = createElement('div','name')
+    let playerImg = createElement('img')
 
     // Add attributes
     playerImg.setAttribute('src',player.img)
@@ -52,57 +82,58 @@ const createPlayer = (classUser,player) => {
     progressbarDiv.append(lifeDiv,nameDiv)
     playerDiv.append(progressbarDiv, characterDiv)
 
-    // Add player in Arena
-    arenas.append(playerDiv)
+    return playerDiv
 }
 
-const random = (player) => {
-    // Select life
-    let playerDiv = document.querySelector(`.player${player.player}`)
-    let lifeDiv = playerDiv.querySelector('.life')
-
-    // Calculate hp
-    let hpRemove = Math.ceil(Math.random()*(20 - 1)+1);
-    if(hpRemove>=player.hp){
-        player.hp = 0
-    }else{
-        player.hp -= hpRemove
-    }
-    // Change HTML
-    lifeDiv.style.width = player.hp+'%'
+// Initialize players
+const player1 = {
+    player: 1,
+    name: 'Sonya',
+    hp: 100,
+    img: 'http://reactmarathon-api.herokuapp.com/assets/sonya.gif',
+    weapon: ['Gun','Legs','Arms'],
+    attack() {
+        console.log(`${this.name} Fight...`)
+    },
+    elHP, renderHP, changeHP
 }
 
-// Fight
-const changeHP = () => {
-    // Change HP Player 1
-    random(player1)
-    if(player1.hp){
-        // Change HP Player 2
-        random(player2)
-        if(!player2.hp){
-            // Player 1 Win
-            winsUser(player1.name)
-        }
-    }else{
-        // Player 2 Win
-        winsUser(player2.name)
-    }
-
+const player2 = {
+    player: 2,
+    name: 'Scorpio',
+    hp: 100,
+    img: 'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif',
+    weapon: ['Blade','Legs','Scorpion'],
+    attack() {
+        console.log(`${this.name} Fight...`)
+    },
+    elHP, renderHP, changeHP
 }
 
-const winsUser = (name) => {
+
+// Button RANDOM (Fight)
+button.addEventListener('click',function () {
+    player1.changeHP(getRandom(20))
+    player2.changeHP(getRandom(20))
     // Disabled button
-    button.disabled = true
+    if(player1.hp===0 || player2.hp===0) {
+        button.disabled = true
+    }
+    // Show result
+    if(player1.hp && !player2.hp) {
+        showResult(player1.name)
+    } else if (!player1.hp && player2.hp) {
+        showResult(player2.name)
+    } else if (!player1.hp && !player2.hp) {
+        showResult()
+    }
+})
 
-    // Show player win
-    let loseTitle = document.createElement('div')
-    loseTitle.classList.add('loseTitle')
-    loseTitle.innerHTML = `${name} WIN!`
-    arenas.append(loseTitle)
-}
+
+
 
 
 
 // Create players in Arena
-createPlayer('player1', player1)
-createPlayer('player2', player2)
+arenas.append(createPlayer(player1))
+arenas.append(createPlayer(player2))
