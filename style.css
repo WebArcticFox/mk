@@ -96,6 +96,10 @@ body {
     background-image: url(./assets/waterfront.png);
 }
 
+.arenas.arena6 {
+    background-image: url(./assets/depositphotos_375061306-stock-photo-empty-illuminated-red-square-and.jpeg);
+}
+
 .player1,
 .player2 {
     width: 50%;
@@ -170,15 +174,16 @@ body {
 }
 
 .chat {
-    width: 786px;
-    height: 30vh;
+    width: 800px;
+    height: 34vh;
     background-image: url(./assets/versus.png);
     background-size: cover;
     background-position: center;
     border-top: 4px solid #f5d100;
-    padding: 6px 40px;
-    overflow: scroll;
+    padding: 6px 40px 0 45px;
+    overflow-y: scroll;
     color: white;
+    font-size: 0.8em;
     font-family: Arial;
 }
 
