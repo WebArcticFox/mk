@@ -1,4 +1,4 @@
-const LogsReplace = (text,player1,player2, time = '') => {
+const logsReplace = (text,player1,player2, time = '') => {
     if(!time){
         return text.replace('[player1]', player1.name).replace('[player2]', player2.name);
     }else{
@@ -6,4 +6,4 @@ const LogsReplace = (text,player1,player2, time = '') => {
     }
 };
 
-export default LogsReplace;
+export default logsReplace;

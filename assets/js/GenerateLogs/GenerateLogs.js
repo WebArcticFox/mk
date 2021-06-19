@@ -1,6 +1,6 @@
 import getTime from "../utils/getTime.js";
 import getRandom from "../utils/getRandom.js";
-import logsReplace from "./LogsReplace.js";
+import logsReplace from "./logsReplace.js";
 
 // Logs
 const logs = {
@@ -63,6 +63,7 @@ const generateLogs = (type, player1 = {}, player2 = {}, chat, damage = 0) => {
             break;
         default:
             text = 'Игра немного затупила и решила что надо пообщаться в чате :)';
+            break;
     }
 
     const newElementChat = `<p>${text}</p>`;
