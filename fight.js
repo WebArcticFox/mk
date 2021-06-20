@@ -2,4 +2,4 @@
 import Game from './assets/js/Game'
 
 const mk = new Game();
-mk.init();
+mk.start();

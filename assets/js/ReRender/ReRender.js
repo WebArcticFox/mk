@@ -1,6 +1,6 @@
-const reRender = (player1, player2) => {
-    player1.renderHP();
-    player2.renderHP();
+const reRender = function () {
+    this.player1.renderHP();
+    this.player2.renderHP();
 };
 
 export default reRender;
