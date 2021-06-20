@@ -3,7 +3,6 @@ import reRender from "../ReRender/ReRender.js";
 import generateLogs from "../GenerateLogs/GenerateLogs.js";
 import fight from "../Fight/Fight.js";
 import allPlayerAttack from "../PlayersAttack/PlayersAttack.js";
-import getRandom from "../utils/getRandom.js";
 import {showResultFight, createReloadButton} from "../ShowResultFight/ShowResultFight.js";
 import createEmptyPlayerBlock from "../utils/createEmptyPlayerBlock.js";
 import createElement from "../utils/createElement.js";
@@ -16,11 +15,8 @@ class Game {
         this.arenas = document.querySelector('.arenas');
         this.formFight = document.querySelector('form.control');
         this.chat = document.querySelector('.chat');
-        this.parent = document.querySelector('.parent');
-        this.playerStart = document.querySelector('.player');
         this.enemy = {};
         this.attack = {};
-        this.players = [];
         this.playerOneRandom = {};
     }
 
@@ -30,7 +26,6 @@ class Game {
     fight = fight;
     reRender = reRender;
     generateLogs = generateLogs;
-    getRandom = getRandom;
     createReloadButton = createReloadButton;
     createEmptyPlayerBlock = createEmptyPlayerBlock;
     createElement = createElement;
@@ -60,8 +55,10 @@ class Game {
     init = async () =>  {
         localStorage.removeItem('player1');
         const players = await this.getPlayers();
+        const parent = document.querySelector('.parent');
+        const playerStart = document.querySelector('.player');
         let imgSrc = null;
-        this.createEmptyPlayerBlock();
+        this.createEmptyPlayerBlock(parent);
         players.forEach(item => {
             const el = this.createElement('div', ['character', `div${item.id}`]);
             const img = this.createElement('img');
@@ -71,14 +68,14 @@ class Game {
                     imgSrc = item.img;
                     const img = this.createElement('img');
                     img.src = imgSrc;
-                    this.playerStart.appendChild(img);
+                    playerStart.appendChild(img);
                 }
             });
 
             el.addEventListener('mouseout', () => {
                 if (imgSrc) {
                     imgSrc = null;
-                    this.playerStart.innerHTML = '';
+                    playerStart.innerHTML = '';
                 }
             });
 
@@ -94,7 +91,7 @@ class Game {
             img.alt = item.name;
 
             el.appendChild(img);
-            this.parent.appendChild(el);
+            parent.appendChild(el);
         });
     };
 
