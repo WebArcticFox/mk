@@ -2,15 +2,15 @@ import createElement from "../utils/createElement.js";
 import generateLogs from "../GenerateLogs/GenerateLogs.js";
 
 // Create Reload Button
-const createReloadButton = (arenas) => {
+export const createReloadButton = function () {
     let reloadWrap = createElement('div','reloadWrap');
     let reloadButton = createElement('button', 'button');
     reloadButton.innerHTML = 'Restart';
     reloadButton.addEventListener('click',() => {
-        window.location.reload();
+        this.reloadGame();
     });
     reloadWrap.appendChild(reloadButton);
-    arenas.append(reloadWrap);
+    this.arenas.append(reloadWrap);
 };
 
 const userWins = (name, player1, player2, arenas, chat) => {
@@ -34,19 +34,19 @@ const userWins = (name, player1, player2, arenas, chat) => {
     arenas.append(loseTitle);
 };
 
-const showResultFight = (player1, player2, arenas, formFight, chat) => {
-    if(player1.hp===0 || player2.hp===0) {
-        formFight.style.display = 'none';
-        createReloadButton(arenas);
+export const showResultFight = function() {
+    if(this.player1.hp===0 || this.player2.hp===0) {
+        this.formFight.style.display = 'none';
         // Show result
-        if(player1.hp && !player2.hp) {
-            userWins(player1.name, player1, player2, arenas, chat);
-        } else if (!player1.hp && player2.hp) {
-            userWins(player2.name, player1, player2, arenas, chat);
-        } else if (!player1.hp && !player2.hp) {
-            userWins('', {}, {},arenas, chat);
+        if(this.player1.hp && !this.player2.hp) {
+            userWins(this.player1.name, this.player1, this.player2, this.arenas, this.chat);
+        } else if (!this.player1.hp && this.player2.hp) {
+            userWins(this.player2.name, this.player1, this.player2, this.arenas, this.chat);
+        } else if (!this.player1.hp && !this.player2.hp) {
+            userWins('', {}, {}, this.arenas, this.chat);
         }
-    }
-};
 
-export default showResultFight;
+        return true;
+    }
+    return false;
+};

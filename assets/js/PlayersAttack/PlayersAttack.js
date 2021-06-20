@@ -1,36 +1,20 @@
-// Player Attack
-import getRandom from "../utils/getRandom.js";
-
-// Initialize damage
-const HIT = {
-    head: 50,
-    body: 30,
-    foot: 20,
-};
-const ATTACK = ['head','body','foot'];
-
-export const playerAttack = (formFight) => {
-    const attack = {}; // User Attack
-    for (let item of formFight) {
+const allPlayerAttack = async function() {
+    let hit = '';
+    let defence = '';
+    for (let item of this.formFight) {
         if(item.checked && item.name === 'hit') {
-            attack.value = getRandom(HIT[item.value]);
-            attack.hit = item.value;
+            hit = item.value;
         }
         if(item.checked && item.name === 'defence') {
-            attack.defence = item.value;
+            defence = item.value;
         }
         item.checked = false;
     }
-    return attack;
+
+    await this.getDamage(hit, defence).then( data => {
+        this.attack = data.player1;
+        this.enemy = data.player2;
+    })
 };
 
-// Bot attack
-export const enemyAttack = () => {
-    const hit = ATTACK[getRandom(3)-1];
-    const defence = ATTACK[getRandom(3)-1];
-    return {
-        value: getRandom(HIT[hit]),
-        hit,
-        defence
-    };
-};
+export default allPlayerAttack;

@@ -12,8 +12,6 @@ P
  assets/js/utils/createElement.js,9/5/950eba10088de898728d9d43e64e1e765abb4119
 N
 assets/js/ReRender/ReRender.js,6/a/6a563238d2d26505249f560d0d16ada612d9ea14
-V
-&assets/js/CreatePlayer/CreatePlayer.js,e/3/e35875a6de8e9e7e33baba03b1fbba3f6725270b
 H
 assets/js/Fight/Fight.js,0/9/0908d7ed7541f542b223b4f191cdca9e40cab9bf
 X
@@ -26,3 +24,7 @@ U
 %assets/js/GenerateLogs/LogsReplace.js,8/4/8445a5a7457761859c44baa25a59edb3848ec5cc
 \
 ,assets/js/ShowResultFight/ShowResultFight.js,d/1/d173a9526cf4c279eb31d4dbb08426dde05567f6
+I
+assets/js/Player/index.js,5/c/5c4a5b0dda5142991fd111069042c8727446150c
+G
+assets/js/Game/index.js,9/3/9367b3b25d2eb9aef0da8b64df8a32e0d8f34a21

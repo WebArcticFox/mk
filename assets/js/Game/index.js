@@ -1,63 +1,140 @@
 import Player from "../Player";
 import reRender from "../ReRender/ReRender.js";
-import showResultFight from "../ShowResultFight/ShowResultFight.js";
 import generateLogs from "../GenerateLogs/GenerateLogs.js";
 import fight from "../Fight/Fight.js";
-import {enemyAttack, playerAttack} from "../PlayersAttack/PlayersAttack.js";
+import allPlayerAttack from "../PlayersAttack/PlayersAttack.js";
+import getRandom from "../utils/getRandom.js";
+import {showResultFight, createReloadButton} from "../ShowResultFight/ShowResultFight.js";
+import createEmptyPlayerBlock from "../utils/createEmptyPlayerBlock.js";
+import createElement from "../utils/createElement.js";
 
-// Initialize base elements
-const arenas = document.querySelector('.arenas');
-const formFight = document.querySelector('form.control');
-const chat = document.querySelector('.chat');
 
 class Game {
-    // all items for Game
+    constructor() {
+        this.player1 = {};
+        this.player2 = {};
+        this.arenas = document.querySelector('.arenas');
+        this.formFight = document.querySelector('form.control');
+        this.chat = document.querySelector('.chat');
+        this.parent = document.querySelector('.parent');
+        this.playerStart = document.querySelector('.player');
+        this.enemy = {};
+        this.attack = {};
+        this.players = [];
+        this.playerOneRandom = {};
+    }
+
+    // all base items for Game
     showResultFight = showResultFight;
+    allPlayerAttack = allPlayerAttack;
     fight = fight;
-    playerAttack = playerAttack;
-    enemyAttack = enemyAttack;
     reRender = reRender;
     generateLogs = generateLogs;
-    // /all items for Game
+    getRandom = getRandom;
+    createReloadButton = createReloadButton;
+    createEmptyPlayerBlock = createEmptyPlayerBlock;
+    createElement = createElement;
+    // /all base items for Game
 
-    start = () => {
-        // Initialize players
-        const player1 = new Player({
+    getPlayers = async () => {
+        const data = fetch('https://reactmarathon-api.herokuapp.com/api/mk/players').then(responce => responce.json());
+        return data;
+    };
+
+    getOneRandomPlayer = async () => {
+        const data = fetch('https://reactmarathon-api.herokuapp.com/api/mk/player/choose').then(responce => responce.json());
+        return data;
+    };
+
+    getDamage = async (hit, defence) => {
+        const data = fetch('http://reactmarathon-api.herokuapp.com/api/mk/player/fight', {
+            method: 'POST',
+            body: JSON.stringify({
+                hit,
+                defence,
+            })
+        }).then(responce => responce.json());
+        return data;
+    };
+
+    init = async () =>  {
+        localStorage.removeItem('player1');
+        const players = await this.getPlayers();
+        let imgSrc = null;
+        this.createEmptyPlayerBlock();
+        players.forEach(item => {
+            const el = this.createElement('div', ['character', `div${item.id}`]);
+            const img = this.createElement('img');
+
+            el.addEventListener('mousemove', () => {
+                if (imgSrc === null) {
+                    imgSrc = item.img;
+                    const img = this.createElement('img');
+                    img.src = imgSrc;
+                    this.playerStart.appendChild(img);
+                }
+            });
+
+            el.addEventListener('mouseout', () => {
+                if (imgSrc) {
+                    imgSrc = null;
+                    this.playerStart.innerHTML = '';
+                }
+            });
+
+            el.addEventListener('click', () => {
+                localStorage.setItem('player1', JSON.stringify(item));
+                el.classList.add('active');
+                setTimeout(() => {
+                    window.location.pathname = '/mk/fight.html';
+                }, 1000);
+            });
+
+            img.src = item.avatar;
+            img.alt = item.name;
+
+            el.appendChild(img);
+            this.parent.appendChild(el);
+        });
+    };
+
+    start = async () => {
+        this.playerOneRandom = await this.getOneRandomPlayer();
+
+        this.player1 = new Player({ // Create user
+            ...JSON.parse(localStorage.getItem('player1')),
             player: 1,
-            name: 'Raiden',
-            hp: 100,
-            img: 'https://www.fightersgeneration.com/nz2/char/raiden-mk2-hd-sprite-cancelled-project.GIF',
             rootSelector: 'arenas'
         });
 
-        const player2 = new Player({
+        this.player2 = new Player({ // Create bot
+            ...this.playerOneRandom,
             player: 2,
-            name: 'Scorpion',
-            hp: 100,
-            img: 'https://www.fightersgeneration.com/nz2/char/scorpion-mk-hd-sprite-cancelled-project.gif',
             rootSelector: 'arenas'
-        });
-
-        // Send form for Fight
-        formFight.addEventListener('submit',(e) => {
-            e.preventDefault();
-
-            const enemy = this.enemyAttack(); // Bot Attack (random fight)
-            const attack = this.playerAttack(formFight); // User Attack (data from formFight)
-
-            this.fight(attack,enemy,player1,player2,chat); // Attack User
-            this.fight(enemy,attack,player2,player1,chat); // Attack Bot
-
-            this.reRender(player1, player2); // ReRender HP
-
-            this.showResultFight(player1, player2, arenas, formFight, chat); // Show result (title wins, logs wins, added reload button
         });
 
         // Create players in Arena
-        player1.createPlayer();
-        player2.createPlayer();
+        this.player1.createPlayer();
+        this.player2.createPlayer();
 
-        this.generateLogs('start',player1, player2, chat);
+        this.generateLogs('start', this.player1, this.player2, this.chat);
+
+        // Form for Fight
+        this.formFight.addEventListener('submit',async (e) => {
+            e.preventDefault();
+            await this.allPlayerAttack(); // Get player and enemy attack from api
+            this.fight(); // Attack user and attack bot
+            this.reRender(); // ReRender HP
+            // Show result
+            if(this.showResultFight()){
+                this.createReloadButton(); // If fight ended - we draw reload button
+            }
+            // /show result
+        });
+    };
+
+    reloadGame = () => {
+        window.location.pathname = '/mk/index.html';
     }
 }
 
